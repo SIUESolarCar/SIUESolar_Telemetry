@@ -15,7 +15,7 @@ combined_hex = ''.join(hex_string[2:].zfill(2) for hex_string in hex_strings)
 AllOfTheHex = bytes.fromhex(combined_hex)
 
 
-db = cantools.database.load_file('OrionBMS.dbc')
+db = cantools.database.load_file('dbc/OrionBMS.dbc')
 #print("db._messages:")
 #print(db._frame_id_to_message)
 
@@ -36,9 +36,9 @@ write_api = 0
 
 
 
-#def FrameName(db):
-#    frame_name = db.get_message_by_frame_id(frame_id)._name
-#    return(frame_name)
+def FrameName(db):
+    frame_name = db.get_message_by_frame_id(frame_id)._name
+    return(frame_name)
 
 def DecodeMessage(db, data):
     message = db.decode_message(frame_id, data)
