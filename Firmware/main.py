@@ -4,7 +4,8 @@ import MCP2512
 import socketcand
 import slcan
 
-socketcand.ap_mode('NAME', 'PASSWORD')
+socketcan = socketcand.socketcand()
+socketcan.ap_mode('NAME', 'PASSWORD')
 
 if __name__ == '__main__':
 
