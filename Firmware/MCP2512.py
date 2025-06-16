@@ -433,34 +433,34 @@ SPI0_CS0 = 5
 # debug = False
 debug = True
 class MCP2515():
-    def __init__(self):
+	def __init__(self):
 		self.spi = SPI(0)
 		self.spi = SPI(0,10000_000,polarity=0, phase=0,sck=Pin(6),mosi=Pin(7),miso=Pin(4))
 		self.cs = Pin(SPI0_CS0,Pin.OUT)
         
-    def ReadByte(self, addr):
+	def ReadByte(self, addr):
 		self.cs(0)
 		self.spi.write(bytearray([CAN_READ]))
 		self.spi.write(bytearray([addr]))
 		res = self.spi.read(1)
 		self.cs(1)
 		return int.from_bytes(res,'big')
-    def WriteByte(self, addr):
+	def WriteByte(self, addr):
 		self.cs(0)
 		self.spi.write(bytearray([addr]))
 		self.cs(1)
-    def WriteBytes(self, addr, data):
+	def WriteBytes(self, addr, data):
 		self.cs(0)
 		self.spi.write(bytearray([CAN_WRITE]))
 		self.spi.write(bytearray([addr]))
 		self.spi.write(bytearray([data]))
 		self.cs(1)
-    def Reset(self):
+	def Reset(self):
 		self.cs(0)
 		self.spi.write(bytearray([CAN_RESET])) #Reset 0XC0
 		self.cs(1)
 		
-    def Init(self, speed="500KBPS"):
+	def Init(self, speed="500KBPS"):
 		print("Reset")
 		self.Reset()
 		time.sleep(0.1)
@@ -507,7 +507,7 @@ class MCP2515():
 		if( OPMODE_NORMAL != (dummy and 0xE0)):
 			self.WriteBytes(CANCTRL, REQOP_NORMAL|CLKOUT_ENABLED)#set normal mode
 
-    def Send(self, CAN_ID, CAN_TX_Buf, length1):
+	def Send(self, CAN_ID, CAN_TX_Buf, length1):
 		tempdata = self.ReadByte(CAN_RD_STATUS)
 		self.WriteBytes(TXB0SIDH, (CAN_ID>>3)&0XFF)
 		self.WriteBytes(TXB0SIDL, (CAN_ID&0x07)<<5)
@@ -526,7 +526,7 @@ class MCP2515():
 					break
 		self.WriteByte(CAN_RTS_TXB0)
 
-    def Receive(self, CAN_ID):
+	def Receive(self, CAN_ID):
 		self.WriteBytes(RXB0SIDH, (CAN_ID>>3)&0XFF)
 		self.WriteBytes(RXB0SIDL, (CAN_ID&0x07)<<5)
 		CAN_RX_Buf = []
@@ -537,6 +537,8 @@ class MCP2515():
 				for i in range(0, len): 
 					CAN_RX_Buf.append(hex(self.ReadByte(RXB0D0+i)))
 					# print(self.ReadByte(RXB0D0+i))
+				break
+			else:
 				break
 
 		self.WriteBytes(CANINTF, 0)
