@@ -4,6 +4,8 @@ import socket
 
 port = 29536
 
+request = b''
+
 class socketcand():
 
   def __init__(self):
@@ -38,10 +40,16 @@ class socketcand():
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   #creating socket object
     self.s.bind(('', port))
     self.s.listen(5)
-
+    self.s.settimeout(None)
+    
   def AcceptCan(self, Unconnected):
+    self.s.settimeout(None)
     while(Unconnected):
-      self.conn, addr = self.s.accept()
+      try:
+        self.conn, addr = self.s.accept()
+      except Exception as e:
+        Unconnected = True
+        break
       self.conn.send("< hi >")
       print("Connected")
       request = self.conn.recv(1024)
@@ -51,23 +59,16 @@ class socketcand():
       print(request)
       self.conn.send("< ok >")
       Unconnected = False
+    self.s.setblocking(False)
     return Unconnected
 
   def ReadCan(self, Unconnected):
     if(Unconnected == False):
-      request = self.conn.recv(1024)
-      #print(request)
-      return request
-  
-  def Echo(self, Unconnected):
-    self.conn.send("< echo >")
-    request = self.conn.recv(1024)
-    if request == b'< echo >':
-      Unconnected = False
-    else:
-      Unconnected = True
-    
-    return Unconnected
-
-
-      
+      try:
+        request = self.conn.recv(1024)
+        if request == b'':
+          Unconnected = True
+      except Exception as e:
+        request = None
+        Unconnected = True
+    return request, Unconnected

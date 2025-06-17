@@ -538,8 +538,6 @@ class MCP2515():
 					CAN_RX_Buf.append(hex(self.ReadByte(RXB0D0+i)))
 					# print(self.ReadByte(RXB0D0+i))
 				break
-			else:
-				break
 
 		self.WriteBytes(CANINTF, 0)
 		self.WriteBytes(CANINTE,0x01)#enable

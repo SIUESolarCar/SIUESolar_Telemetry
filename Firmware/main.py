@@ -1,4 +1,5 @@
 import time
+import asyncio
 
 import MCP2512
 import socketcand
@@ -6,6 +7,15 @@ import slcan
 
 Unconnected = True
 readbuf = []
+
+async def SocketCan(socketcan, Unconnected):
+    Unconnected = socketcan.AcceptCan(Unconnected)
+    Msg = await asyncio.wait_for(socketcan.ReadCan(Unconnected), 5)
+    return Msg
+
+async def main():
+    task1 = asyncio.create_task(SocketCan(socketcan, Unconnected))
+    await task1
 
 if __name__ == '__main__':
     can = MCP2512.MCP2515()
@@ -20,8 +30,11 @@ if __name__ == '__main__':
 
     while(1):
         Unconnected = socketcan.AcceptCan(Unconnected)
-        Msg = socketcan.ReadCan(Unconnected)
-        print(Msg)
-        readbuf = can.Receive(id)
-        print(readbuf)
+        #asyncio.run(main())
+        Msg, Unconnected = socketcan.ReadCan(Unconnected)
+        #Msg = asyncio.run(SocketCan(socketcan, Unconnected))
+        if Msg != None:
+            print(Msg)
+        #readbuf = can.Receive(id)
+        #print(readbuf)
         #time.sleep(0.5)
