@@ -9,7 +9,7 @@ We are using a Raspberry Pi connected to the CAN bus. The main method for data t
 
 # Hardware
 - Raspberry Pi 3B+
-- USB CAN Bus Module
+- CAN Bus Module
 
 
 # Setup Process

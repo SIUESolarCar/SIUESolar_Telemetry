@@ -1,6 +1,4 @@
-# Setting up the Raspberry Pi
-
-## Raspberry Pi Operating System
+# Raspberry Pi Operating System
 Start by taking the SD card used for the RPi and opening Raspberry Pi Imager on a sperate computer.
 
 1. Plug in the SD Card
@@ -12,6 +10,24 @@ Start by taking the SD card used for the RPi and opening Raspberry Pi Imager on 
 7. Follow steps as needed
 8. Write the Image to the SD Card
 
+# Automated install
+Clone the repository and change to its directory:
+``` bash
+$ git clone https://github.com/SIUESolarCar/SIUESolar_Telemetry.git
+$ cd SIUESolar_Telemetry/
+```
+
+Make it executable
+``` bash
+$ chmod +x installer.sh
+```
+
+Execute the install script using:
+``` bash
+$ ./setup.sh
+```
+
+# Manual install
 ## CAN Driver Installation
 Insert the module into the Raspberry Pi, modify the start-up script "config.txt".
 
