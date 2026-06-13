@@ -32,6 +32,10 @@ fi
 # ----------------------------------------------------------------
 # 2. SocketCANd Installation
 # ----------------------------------------------------------------
+echo "--> Safely stopping any existing socketcand services..."
+# If the service doesn't exist or isn't running, '|| true' ensures the script doesn't crash
+systemctl stop socketcand || true
+
 echo "--> Installing SocketCANd dependencies..."
 sudo apt-get update
 sudo apt-get install -y libconfig-dev git meson build-essential

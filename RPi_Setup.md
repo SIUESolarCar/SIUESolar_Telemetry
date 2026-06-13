@@ -1,3 +1,5 @@
+# Install 
+
 # Raspberry Pi Operating System
 Start by taking the SD card used for the RPi and opening Raspberry Pi Imager on a sperate computer.
 
@@ -24,7 +26,7 @@ $ chmod +x installer.sh
 
 Execute the install script using:
 ``` bash
-$ ./setup.sh
+$ ./installer.sh
 ```
 
 # Manual install
@@ -100,7 +102,7 @@ $ sudo ifconfig can0 up
 
 Start SocketCANd
 ``` bash
-$ socketcand -v -i can0 -l eth0 -l wlan0
+$ socketcand -v -i can0 -l eth0
 ```
 
 Start the TCP and the UDP Forwarder (Untested)
