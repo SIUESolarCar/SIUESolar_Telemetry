@@ -8,6 +8,12 @@ echo " Starting SolarTelm Setup Script"
 echo "========================================="
 
 # ----------------------------------------------------------------
+# 0. Stop any existing tmux sessions
+# ----------------------------------------------------------------
+echo "--> Safely stopping any existing tmux sessions..."
+tmux kill-server || true
+
+# ----------------------------------------------------------------
 # 1. CAN Driver Configuration (Modifying config.txt)
 # ----------------------------------------------------------------
 echo "--> Configuring CAN Driver in config.txt..."
@@ -53,32 +59,54 @@ meson setup -Dlibconfig=true --buildtype=release build
 meson compile -C build
 sudo meson install -C build
 cd .. # Return to original directory
+rm -rf socketcand
 
 # ----------------------------------------------------------------
 # 3. Network & Hotspot Configuration
 # ----------------------------------------------------------------
-echo "--> Launching raspi-config for WLAN Country setup..."
-echo "    [ACTION REQUIRED] Please navigate to: Localisation Options -> WLAN Country"
-echo "    Press ENTER when you are ready to open raspi-config..."
-read -r
+read -r -p "Would you like to install the Network/Hotspot settings? [y/N]: " INSTALL_NETWORK
+case "$INSTALL_NETWORK" in
+  [Yy]|[Yy][Ee][Ss])
+    echo "--> Launching raspi-config for WLAN Country setup..."
+    echo "    [ACTION REQUIRED] Please navigate to: Localisation Options -> WLAN Country"
+    echo "    Press ENTER when you are ready to open raspi-config..."
+    read -r
 
-sudo raspi-config
+    sudo raspi-config
 
-echo "--> Setting up the Wi-Fi Hotspot..."
-read -sp "Enter the password you want to use for the 'SIUESolar' hotspot: " HOTSPOT_PWD
-echo ""
+    echo "--> Setting up the Wi-Fi Hotspot..."
+    echo "    Password must be at least 11 characters long."
+    while true; do
+      read -sp "Enter the password you want to use for the 'SIUESolar' hotspot: " HOTSPOT_PWD
+      echo ""
+      if [ ${#HOTSPOT_PWD} -ge 11 ]; then
+        break
+      fi
+      echo "    Password is too short. Please enter a password with at least 11 characters."
+    done
 
-# Remove existing hotspot connection if it exists to avoid conflicts
-sudo nmcli connection delete hotspot || true
+    # Remove existing hotspot connection if it exists to avoid conflicts
+    sudo nmcli connection delete hotspot || true
 
-sudo nmcli connection add con-name hotspot ifname wlan0 type wifi ssid "SIUESolar"
-sudo nmcli connection modify hotspot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$HOTSPOT_PWD"
-sudo nmcli connection modify hotspot 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
-sudo nmcli con modify hotspot 802-11-wireless-security.pmf 1
-sudo nmcli connection up hotspot
+    sudo nmcli connection add con-name hotspot ifname wlan0 type wifi ssid "SIUESolar"
+    sudo nmcli connection modify hotspot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$HOTSPOT_PWD"
+    sudo nmcli connection modify hotspot 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
+    sudo nmcli con modify hotspot 802-11-wireless-security.pmf 1
+    sudo nmcli connection up hotspot
+    ;;
+  *)
+    echo "--> Skipping Network/Hotspot configuration."
+    ;;
+esac
 
 # ----------------------------------------------------------------
-# 4. Finalizing & Reboot Prompt
+# 4. Tmux Installation
+# ----------------------------------------------------------------
+echo "--> Installing tmux..."
+sudo apt-get install -y tmux
+
+# ----------------------------------------------------------------
+# 5. Finalizing & Reboot Prompt
 # ----------------------------------------------------------------
 echo "========================================="
 echo " Setup complete!"
